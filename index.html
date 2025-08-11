@@ -2,10 +2,10 @@
 <html lang="th">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>PropDecoded • PoC</title>
 
-  <!-- Leaflet (แผนที่) -->
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -13,51 +13,43 @@
     :root{
       --green:#2E7D5B; --green-100:#E9F6F0; --green-300:#BFE3D2;
       --teal:#1F6F63; --yellow:#F5E29E; --ink:#12333A; --muted:#6A7D80;
-      --card:#ffffff; --shadow:0 8px 24px rgba(0,0,0,.08); --radius:16px;
+      --card:#fff; --shadow:0 8px 24px rgba(0,0,0,.08); --radius:16px;
     }
     *{box-sizing:border-box} html,body{height:100%}
-    body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Thai","Prompt",Arial,sans-serif;
-         background:linear-gradient(180deg,var(--green-100),#F7FAF9); color:var(--ink)}
-    .container{max-width:1120px;margin:0 auto;padding:16px 20px 100px}
-    .header{display:flex;align-items:center;justify-content:space-between;padding:8px 0 4px}
+    body{margin:0;font-family:system-ui,-apple-system,"Noto Sans Thai","Prompt",Arial,sans-serif;background:linear-gradient(180deg,var(--green-100),#F7FAF9);color:var(--ink)}
+    .container{max-width:1120px;margin:0 auto;padding:16px 20px 80px}
+    .header{display:flex;align-items:center;justify-content:space-between}
     .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px}
-    .brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--teal));
-                 display:grid;place-items:center;color:#fff;box-shadow:var(--shadow)}
+    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--teal));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow)}
     .topnav{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
     .topnav a{text-decoration:none;color:var(--ink);opacity:.8;font-weight:600;padding:8px 12px;border-radius:12px}
     .topnav a.active{background:#fff;box-shadow:var(--shadow);opacity:1}
+    .welcome{margin:14px 0 10px} .welcome h1{margin:10px 0 4px;font-size:clamp(28px,6vw,46px)}
 
-    .welcome{margin:12px 0 10px} .welcome h1{margin:10px 0 4px;font-size:clamp(28px,6vw,48px)}
-    .quick-grid{display:grid;gap:14px;grid-template-columns:repeat(4,1fr)}
+    .quick-grid{display:grid;gap:14px;grid-template-columns:repeat(4,1fr);margin:6px 0 8px}
     @media (max-width:960px){.quick-grid{grid-template-columns:repeat(2,1fr)}}
     @media (max-width:520px){.quick-grid{grid-template-columns:1fr}}
-    .qcard{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 16px;
-           display:flex;align-items:center;gap:12px;cursor:pointer}
-    .qicon{width:36px;height:36px;border-radius:10px;background:var(--green-300);display:grid;place-items:center;
-           font-weight:900;color:var(--teal)}
-    .qtitle{font-weight:800} .hint{color:var(--muted);font-size:13px;margin-top:2px}
+    .qcard{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer}
+    .qicon{width:36px;height:36px;border-radius:10px;background:var(--green-300);display:grid;place-items:center;font-weight:900;color:var(--teal)}
+    .qtitle{font-weight:800}.hint{color:var(--muted);font-size:13px;margin-top:2px}
 
-    .lens-bar{margin:18px 0 10px;display:flex;gap:8px;flex-wrap:wrap}
+    .lens-bar{margin:12px 0 12px}
     .seg{border:2px solid var(--green);border-radius:999px;padding:4px;display:inline-flex;gap:6px;background:#fff;box-shadow:var(--shadow)}
     .seg button{all:unset;padding:8px 14px;border-radius:999px;color:var(--green);font-weight:800;cursor:pointer}
     .seg button.active{background:linear-gradient(180deg,var(--green-300),#fff);color:var(--ink)}
 
     .main{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start}
-    @media (max-width:920px){.main{grid-template-columns:1fr}}
-    #map{height:56vh;min-height:320px;border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+    @media (max-width:900px){.main{grid-template-columns:1fr}}
+    #map{height:56vh;min-height:320px;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);background:#e6eef0}
 
-    .insight{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 16px 8px}
+    .insight{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:16px}
     .badge{display:inline-block;background:var(--green-300);color:var(--teal);padding:6px 10px;border-radius:999px;font-weight:800;font-size:13px;margin-right:6px}
     .meter{height:10px;background:#ECF2F3;border-radius:999px;overflow:hidden}
     .meter>span{display:block;height:100%;background:linear-gradient(90deg,#CFEBDD,var(--yellow));width:40%}
     .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
-    .kpi .card{background:#fff;border:1.5px solid #E5EFE9;border-radius:14px;padding:12px}
-    .muted{color:var(--muted)} .btn{background:var(--green);color:#fff;border:none;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
-
-    /* Modal (ติดต่อเรา) */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px}
-    .modal{background:#fff;border-radius:16px;max-width:520px;width:100%;box-shadow:var(--shadow);padding:18px}
-    .close{float:right;border:none;background:transparent;font-size:18px;cursor:pointer}
+    .card{background:#fff;border:1.5px solid #E5EFE9;border-radius:14px;padding:12px}
+    .muted{color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
   </style>
 </head>
 <body>
@@ -68,21 +60,20 @@
         <a class="active" href="#">หน้าแรก</a>
         <a href="#">วิเคราะห์พื้นที่</a>
         <a href="#">รีวิว</a>
-        <a href="#" id="openContact">ติดต่อเรา</a>
       </nav>
     </header>
 
     <section class="welcome"><h1>ยินดีต้อนรับ</h1></section>
 
-    <!-- เมนูสี่กล่อง -->
-    <section class="quick-grid">
+    <!-- เมนูด่วน 4 อัน -->
+    <section class="quick-grid" aria-label="เมนูด่วน">
       <div class="qcard"><div class="qicon">➤</div><div><div class="qtitle">เริ่มต้นใช้งาน</div><div class="hint">เลือกเลนส์แล้วเริ่มสำรวจ</div></div></div>
       <div class="qcard"><div class="qicon">⌁</div><div><div class="qtitle">บทวิเคราะห์</div><div class="hint">อ่าน insight ที่คัดสรร</div></div></div>
       <div class="qcard"><div class="qicon">§</div><div><div class="qtitle">ข้อกฎหมายที่ควรทราบ</div><div class="hint">ข้อมูลกลางเพื่อประกอบความเข้าใจ</div></div></div>
-      <div class="qcard" id="contactCard"><div class="qicon">☎</div><div><div class="qtitle">ติดต่อเรา</div><div class="hint">ส่งข้อความถึงทีมงาน</div></div></div>
+      <div class="qcard" id="openContact"><div class="qicon">☎</div><div><div class="qtitle">ติดต่อเรา</div><div class="hint">ส่งข้อความถึงทีมงาน</div></div></div>
     </section>
 
-    <!-- สวิทช์ 3 เลนส์ -->
+    <!-- ปุ่มสลับเลนส์ -->
     <section class="lens-bar">
       <div class="seg" role="tablist" aria-label="มุมมองข้อมูล">
         <button class="active" id="lens-tenant" role="tab" aria-selected="true">ผู้เช่า</button>
@@ -91,7 +82,7 @@
       </div>
     </section>
 
-    <!-- เนื้อหา -->
+    <!-- เนื้อหาหลัก -->
     <section class="main">
       <div id="map" aria-label="แผนที่"></div>
 
@@ -108,7 +99,7 @@
           <div class="card"><h4 id="kpiRightTitle">รีวิวล่าสุด</h4><div class="muted" id="kpiRightDesc">“ย่านเงียบช่วงกลางคืน มีร้านสะดวกซื้อใกล้ ๆ”</div></div>
         </div>
 
-        <details open class="expander"><summary>รายละเอียด</summary>
+        <details open><summary><b>รายละเอียด</b></summary>
           <p class="muted" id="detailsText">• ตัวอย่างรายละเอียดจากไฟล์ JSON</p>
         </details>
       </aside>
@@ -116,7 +107,7 @@
   </div>
 
   <!-- Modal ติดต่อเรา -->
-  <div class="modal-backdrop" id="modal">
+  <div class="modal-backdrop" id="modal" style="display:none">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <button class="close" id="closeModal">✕</button>
       <h3 id="modalTitle">ติดต่อทีมงาน</h3>
@@ -125,68 +116,85 @@
   </div>
 
   <script>
-  // ====== แผนที่ Leaflet ======
-  const map = L.map('map').setView([13.736, 100.523], 12); // กทม.
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
-  // ตัวอย่างหมุด
-  L.marker([13.736,100.523]).addTo(map).bindPopup('ใจกลางเมือง (ตัวอย่าง)');
-
-  // ====== ฟังก์ชันโหลด JSON + fallback ======
-  const fallback = {
-    tenant:{ tag:'ผู้เช่า', subtitle:'ภาพรวมสำหรับผู้อยู่อาศัย', meter:0.62,
-      kpiLeftDesc:'CBD ~ 18 นาที • BTS ~ 6 นาที',
-      kpiRightTitle:'รีวิวล่าสุด',
-      kpiRightDesc:'“เงียบช่วงกลางคืน เดินไปสถานีได้”',
-      detailsText:'• ปลอดภัยในตรอกซอยหลัก<br>• ร้านอาหารท้องถิ่นเยอะ เดินได้<br>• รถติดช่วงเย็นแต่มี BTS เป็นทางเลือก'
-    },
-    investor:{ tag:'นักลงทุน', subtitle:'โอกาสลงทุนและปัจจัยเสี่ยง (โทนเป็นกลาง)', meter:0.72,
-      kpiLeftDesc:'ราคา/ตร.ม. (ช่วง) • ตัวอย่าง',
-      kpiRightTitle:'Opportunity',
-      kpiRightDesc:'Yield proxy ~ 5.6% • Resilience: ดี',
-      detailsText:'• Disaster Resilience: ฟื้นตัวไวหลังเหตุการณ์ใหญ่<br>• Foreign Buyer Pressure: ปานกลาง<br>• ROI Gap: สูงกว่าพื้นที่รอบข้างเล็กน้อย'
-    },
-    renovator:{ tag:'รีโนเวท/ดีเวลอป', subtitle:'ศักยภาพเพิ่มมูลค่าจากการปรับปรุง (ข้อมูลทั่วไป)', meter:0.50,
-      kpiLeftDesc:'อายุอาคาร ~ กลาง • สภาพรวม: มาตรฐาน',
-      kpiRightTitle:'Value Uplift',
-      kpiRightDesc:'Quick wins: แสง/ไฟ, งานสี, วัสดุพื้นผิว',
-      detailsText:'• Pain points: แสงน้อย/เสียงรบกวนบ้าง<br>• ไอเดีย: เปลี่ยนไฟ/ซีลประตู/ปรับผ้าม่าน'
+  document.addEventListener('DOMContentLoaded', async () => {
+    // ===== Map =====
+    if (typeof L === 'undefined') {
+      alert('โหลดแผนที่ไม่สำเร็จ (Leaflet)'); return;
     }
-  };
+    const mapEl = document.getElementById('map');
+    if (!mapEl) { console.error('ไม่พบ #map'); return; }
 
-  async function loadLens(lens){
-    try{
-      const res = await fetch(lens + '.json?v=' + Date.now(), {cache:'no-store'});
-      if(!res.ok) throw new Error('HTTP '+res.status);
-      return await res.json();
-    }catch(e){ return fallback[lens]; }
-  }
+    const map = L.map('map').setView([13.736, 100.523], 12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
 
-  // ====== อ้างอิง element ======
-  const btns = {
-    tenant: document.getElementById('lens-tenant'),
-    investor: document.getElementById('lens-investor'),
-    renovator: document.getElementById('lens-renovator')
-  };
-  const lensTag = document.getElementById('lensTag');
-  const subtitle = document.getElementById('subtitle');
-  const meterFill = document.getElementById('meterFill');
-  const kpiLeftDesc = document.getElementById('kpiLeftDesc');
-  const kpiRightTitle = document.getElementById('kpiRightTitle');
-  const kpiRightDesc = document.getElementById('kpiRightDesc');
-  const detailsText = document.getElementById('detailsText');
+    const places = [
+      { name:'อโศก',    lat:13.737, lng:100.561 },
+      { name:'ทองหล่อ', lat:13.724, lng:100.579 },
+      { name:'สาทร',    lat:13.718, lng:100.530 }
+    ];
+    places.forEach(p => L.marker([p.lat,p.lng]).addTo(map).bindPopup(`<b>${p.name}</b>`));
 
-  async function applyLens(lens){
-    localStorage.setItem('pd_lens', lens);
-    Object.entries(btns).forEach(([id, b])=>{
-      b.classList.toggle('active', id===lens);
-      b.setAttribute('aria-selected', id===lens ? 'true' : 'false');
-    });
-    const d = await loadLens(lens);
-    lensTag.textContent = d.tag || '';
-    subtitle.textContent = d.subtitle || '';
-    meterFill.style.width = Math.round((d.meter||0)*100) + '%';
-    kpiLeftDesc.textContent = d.kpiLeftDesc || '';
-    kpiRightTitle.textContent = d
+    // ===== Elements =====
+    const btns = {
+      tenant: document.getElementById('lens-tenant'),
+      investor: document.getElementById('lens-investor'),
+      renovator: document.getElementById('lens-renovator')
+    };
+    const lensTag = document.getElementById('lensTag');
+    const subtitle = document.getElementById('subtitle');
+    const meterFill = document.getElementById('meterFill');
+    const kpiLeftDesc = document.getElementById('kpiLeftDesc');
+    const kpiRightTitle = document.getElementById('kpiRightTitle');
+    const kpiRightDesc = document.getElementById('kpiRightDesc');
+    const detailsText = document.getElementById('detailsText');
+
+    // ===== Data (fallback) =====
+    const fallback = {
+      tenant:{ tag:'ผู้เช่า', subtitle:'ภาพรวมสำหรับผู้อยู่อาศัย', meter:0.62,
+        kpiLeftDesc:'CBD ~ 18 นาที • BTS ~ 6 นาที',
+        kpiRightTitle:'รีวิวล่าสุด',
+        kpiRightDesc:'“เงียบช่วงกลางคืน เดินไปสถานีได้”',
+        detailsText:'• ร้าน/คาเฟ่ระยะเดินถึง • เย็นรถติดแต่มี BTS'
+      },
+      investor:{ tag:'นักลงทุน', subtitle:'โอกาสลงทุนและปัจจัยเสี่ยง', meter:0.72,
+        kpiLeftDesc:'ราคา/ตร.ม. ช่วงกลาง–บน',
+        kpiRightTitle:'Opportunity',
+        kpiRightDesc:'Yield proxy ~ 5.6% • Resilience: ดี',
+        detailsText:'• ฟื้นตัวราคาเร็ว • ผู้เช่าตปท.ปานกลาง–สูง'
+      },
+      renovator:{ tag:'รีโนเวท/ดีเวลอป', subtitle:'ศักยภาพเพิ่มมูลค่า', meter:0.5,
+        kpiLeftDesc:'อายุอาคาร ~ กลาง',
+        kpiRightTitle:'Value Uplift',
+        kpiRightDesc:'Quick wins: แสง/ไฟ, งานสี',
+        detailsText:'• แสงธรรมชาติน้อย ➜ เปลี่ยนไฟ/ซีลประตู'
+      }
+    };
+
+    async function loadLens(l){
+      try{
+        const r = await fetch(`${l}.json?v=${Date.now()}`, {cache:'no-store'});
+        if(!r.ok) throw 0;
+        return await r.json();
+      }catch{ return fallback[l]; }
+    }
+
+    async function apply(l){
+      Object.entries(btns).forEach(([id,b])=>{
+        b?.classList.toggle('active', id===l);
+        b?.setAttribute('aria-selected', id===l ? 'true' : 'false');
+      });
+      const c = await loadLens(l);
+      lensTag.textContent = c.tag || '';
+      subtitle.textContent = c.subtitle || '';
+      meterFill.style.width = Math.round((c.meter||0)*100) + '%';
+      kpiLeftDesc.textContent = c.kpiLeftDesc || '';
+      kpiRightTitle.textContent = c.kpiRightTitle || '';
+      kpiRightDesc.textContent = c.kpiRightDesc || '';
+      detailsText.innerHTML = c.detailsText || '';
+      localStorage.setItem('pd_lens', l);
+    }
+
+    btns.tenant   ?.addEventListener('click', ()=>apply('tenant'));
+    btns.investor ?.addEventListener('click', ()=>apply('investor'));
