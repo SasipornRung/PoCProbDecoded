@@ -1,156 +1,205 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PropDecoded • PoC (minimal)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PropDecoded • PoC</title>
 
-<!-- Leaflet (แผนที่) -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- Leaflet (แผนที่) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<style>
-  :root{
-    --green:#2E7D5B; --teal:#1F6F63; --yellow:#F5E29E;
-    --ink:#12333A; --muted:#6A7D80; --card:#fff;
-    --shadow:0 8px 24px rgba(0,0,0,.08); --r:16px;
-  }
-  *{box-sizing:border-box} html,body{height:100%}
-  body{margin:0;font-family:system-ui,"Noto Sans Thai",Prompt,Arial,sans-serif;background:#F4FAF7;color:var(--ink)}
-  .wrap{max-width:1100px;margin:0 auto;padding:16px 20px 80px}
-  header{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-  .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--teal));color:#fff;display:grid;place-items:center;box-shadow:var(--shadow)}
-  .lens{margin:12px 0;display:flex;gap:8px;flex-wrap:wrap}
-  .lens button{all:unset;border-radius:999px;padding:9px 14px;border:2px solid var(--green);color:var(--green);cursor:pointer;font-weight:800;background:#fff}
-  .lens button.active{background:linear-gradient(180deg,#DDEFE6,#fff);color:var(--ink)}
-  .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start}
-  @media (max-width:900px){.grid{grid-template-columns:1fr}}
-  #map{height:58vh;min-height:320px;border-radius:var(--r);box-shadow:var(--shadow)}
-  .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
-  .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:#DDEFE6;color:var(--teal);font-weight:800;margin-right:6px}
-  .meter{height:10px;background:#E8EFEA;border-radius:999px;overflow:hidden;margin:10px 0}
-  .meter>span{display:block;height:100%;background:linear-gradient(90deg,#CFEBDD,var(--yellow));width:50%}
-  .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-  .kpi .cell{background:#FAFCFB;border:1.5px solid #E5EFE9;border-radius:12px;padding:10px}
-  h1{margin:8px 0 2px}
-  .muted{color:var(--muted)}
-</style>
+  <style>
+    :root{
+      --green:#2E7D5B; --green-100:#E9F6F0; --green-300:#BFE3D2;
+      --teal:#1F6F63; --yellow:#F5E29E; --ink:#12333A; --muted:#6A7D80;
+      --card:#ffffff; --shadow:0 8px 24px rgba(0,0,0,.08); --radius:16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Thai","Prompt",Arial,sans-serif;
+      background:linear-gradient(180deg,var(--green-100),#F7FAF9);
+      color:var(--ink)
+    }
+    .container{max-width:1120px;margin:0 auto;padding:16px 20px 80px}
+    .header{display:flex;align-items:center;gap:12px;padding:6px 0 10px;font-weight:800}
+    .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--teal));display:grid;place-items:center;color:#fff;box-shadow:var(--shadow)}
+    h1{margin:8px 0 12px}
+
+    /* เมนูด่วน */
+    .quick-grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+    @media(min-width:900px){.quick-grid{grid-template-columns:repeat(4,1fr)}}
+    .qcard{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:18px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;border:none}
+    .qicon{width:36px;height:36px;border-radius:10px;background:var(--green-300);display:grid;place-items:center;font-weight:900;color:var(--teal)}
+    .qtitle{font-weight:800}
+    .hint{color:var(--muted);font-size:13px;margin-top:2px}
+
+    /* เลนส์ */
+    .lens-bar{margin:18px 0 12px;display:flex;gap:8px;flex-wrap:wrap}
+    .seg{border:2px solid var(--green);border-radius:999px;padding:4px;display:inline-flex;gap:6px;background:#fff;box-shadow:var(--shadow)}
+    .seg button{all:unset;padding:8px 14px;border-radius:999px;color:var(--green);font-weight:700;cursor:pointer}
+    .seg button.active{background:linear-gradient(180deg,var(--green-300),#fff);color:var(--ink);box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+
+    /* เนื้อหา 2 คอลัมน์ */
+    .main{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:start}
+    @media(max-width:920px){.main{grid-template-columns:1fr}}
+
+    /* แผนที่ */
+    #map{height:56vh;min-height:320px;border-radius:16px;box-shadow:var(--shadow);}
+
+    /* การ์ด insight */
+    .insight{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:16px 16px 10px}
+    .badge{display:inline-block;background:var(--green-300);color:var(--teal);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;margin-right:6px}
+    .meter{height:10px;background:#ECF2F3;border-radius:999px;overflow:hidden}
+    .meter>span{display:block;height:100%;background:linear-gradient(90deg,#CFEBDD,var(--yellow));width:40%}
+    .kpi{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+    .kpi .card{background:#fff;border:1.5px solid #E5EFE9;border-radius:14px;padding:12px}
+    .kpi h4{margin:0 0 6px}
+    .muted{color:var(--muted)}
+    .btn{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;border:none;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:800}
+    details{background:#FAFCFB;border:1.5px solid #E5EFE9;border-radius:12px;padding:10px 12px;margin:6px 0}
+    summary{cursor:pointer;font-weight:700}
+  </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand"><div class="logo">PD</div><div>PropDecoded</div></div>
-    <div class="muted">PoC minimal</div>
-  </header>
+  <div class="container">
+    <header class="header">
+      <div class="logo">PD</div> PropDecoded
+    </header>
 
-  <h1>ยินดีต้อนรับ</h1>
-  <div class="lens" role="tablist" aria-label="เลนส์">
-    <button id="lens-tenant" class="active" role="tab" aria-selected="true">ผู้เช่า</button>
-    <button id="lens-investor" role="tab" aria-selected="false">นักลงทุน</button>
-    <button id="lens-renovator" role="tab" aria-selected="false">รีโนเวท/ดีเวลอป</button>
-  </div>
+    <h1>ยินดีต้อนรับ</h1>
 
-  <div class="grid">
-    <div id="map" aria-label="แผนที่"></div>
+    <!-- เมนูด่วน 4 ปุ่ม -->
+    <section class="quick-grid" aria-label="เมนูด่วน">
+      <button class="qcard" data-action="get-started">
+        <div class="qicon">➤</div>
+        <div><div class="qtitle">เริ่มต้นใช้งาน</div><div class="hint">เลือกเลนส์แล้วเริ่มสำรวจ</div></div>
+      </button>
+      <button class="qcard" data-action="insights">
+        <div class="qicon">⌁</div>
+        <div><div class="qtitle">บทวิเคราะห์</div><div class="hint">อ่าน insight ที่คัดสรร</div></div>
+      </button>
+      <button class="qcard" data-action="legal">
+        <div class="qicon">§</div>
+        <div><div class="qtitle">ข้อกฎหมายที่ควรทราบ</div><div class="hint">ข้อมูลกลางเพื่อประกอบความเข้าใจ</div></div>
+      </button>
+      <button class="qcard" data-action="contact">
+        <div class="qicon">☎</div>
+        <div><div class="qtitle">ติดต่อเรา</div><div class="hint">อีเมลถึงทีมงาน</div></div>
+      </button>
+    </section>
 
-    <aside class="card">
-      <span class="badge" id="tag">ผู้เช่า</span>
-      <h3 id="title">วัฒนา</h3>
-      <div class="muted" id="subtitle">ภาพรวมสำหรับผู้อยู่อาศัย</div>
-
-      <div style="font-weight:800;margin-top:10px">ตัวชี้วัดหลัก</div>
-      <div class="meter"><span id="meter" style="width:60%"></span></div>
-
-      <div class="kpi">
-        <div class="cell"><div class="muted" id="kpiLeft">CBD ~ 18 นาที • BTS ~ 6 นาที</div></div>
-        <div class="cell"><div style="font-weight:800" id="kpiRightTitle">รีวิวล่าสุด</div>
-          <div class="muted" id="kpiRight">“ย่านเงียบช่วงกลางคืน มีร้านสะดวกซื้อใกล้ ๆ”</div></div>
+    <!-- สวิทช์ 3 เลนส์ -->
+    <section class="lens-bar">
+      <div class="seg" role="tablist" aria-label="มุมมองข้อมูล">
+        <button class="active" id="lens-tenant"   role="tab" aria-selected="true">ผู้เช่า</button>
+        <button id="lens-investor"  role="tab" aria-selected="false">นักลงทุน</button>
+        <button id="lens-renovator" role="tab" aria-selected="false">รีโนเวท/ดีเวลอป</button>
       </div>
+    </section>
 
-      <div style="margin-top:10px" class="muted" id="details">• ตัวอย่างรายละเอียด</div>
-    </aside>
+    <!-- เนื้อหาหลัก -->
+    <section class="main">
+      <div id="map" aria-label="แผนที่"></div>
+
+      <aside class="insight">
+        <span class="badge" id="lensTag">ผู้เช่า</span>
+        <h3 id="areaTitle">วัฒนา</h3>
+        <div class="muted" id="subtitle">ภาพรวมสำหรับผู้อยู่อาศัย</div>
+
+        <div style="margin:12px 0 6px;font-weight:800">ตัวชี้วัดหลัก</div>
+        <div class="meter"><span id="meterFill" style="width:60%"></span></div>
+
+        <div class="kpi">
+          <div class="card"><h4>ข้อมูลย่อ</h4><div class="muted" id="kpiLeftDesc">CBD ~ 18 นาที • BTS ~ 6 นาที</div></div>
+          <div class="card"><h4 id="kpiRightTitle">รีวิวล่าสุด</h4><div class="muted" id="kpiRightDesc">“ย่านเงียบช่วงกลางคืน มีร้านสะดวกซื้อใกล้ ๆ”</div></div>
+        </div>
+
+        <details open><summary>รายละเอียด</summary>
+          <p class="muted" id="detailsText">• ตัวอย่างข้อความรายละเอียดจากไฟล์ JSON</p>
+        </details>
+        <button class="btn" id="seeMore">ดูรายละเอียดเชิงลึก</button>
+      </aside>
+    </section>
   </div>
-</div>
 
-<script>
-/* ---------- ข้อมูลแบบฝังไว้ (ไม่ต้องโหลดไฟล์แยก) ---------- */
-const DATA = {
-  tenant:{ tag:'ผู้เช่า', subtitle:'ภาพรวมสำหรับผู้อยู่อาศัย', meter:0.62,
-    kpiLeft:'CBD ~ 18 นาที • BTS ~ 6 นาที',
-    kpiRightTitle:'รีวิวล่าสุด',
-    kpiRight:'“เงียบช่วงกลางคืน เดินไปสถานีได้”',
-    details:'• ปลอดภัยในตรอกซอยหลัก<br>• ร้านอาหารท้องถิ่นเยอะ เดินได้<br>• รถติดช่วงเย็นแต่มี BTS เป็นทางเลือก'
-  },
-  investor:{ tag:'นักลงทุน', subtitle:'โอกาสลงทุนและปัจจัยเสี่ยง (โทนเป็นกลาง)', meter:0.72,
-    kpiLeft:'ราคา/ตร.ม. (ช่วง) • ตัวอย่าง',
-    kpiRightTitle:'Opportunity',
-    kpiRight:'Yield proxy ~ 5.6% • Resilience: ดี',
-    details:'• Disaster Resilience: ฟื้นตัวไว<br>• Foreign Buyer Pressure: ปานกลาง<br>• ROI Gap: สูงกว่าพื้นที่รอบข้างเล็กน้อย'
-  },
-  renovator:{ tag:'รีโนเวท/ดีเวลอป', subtitle:'ศักยภาพเพิ่มมูลค่าจากการปรับปรุง', meter:0.50,
-    kpiLeft:'อายุอาคาร ~ กลาง • สภาพรวม: มาตรฐาน',
-    kpiRightTitle:'Value Uplift',
-    kpiRight:'Quick wins: แสง/ไฟ, งานสี, วัสดุพื้นผิว',
-    details:'• Pain points: แสงน้อย/เสียงรบกวนบ้าง<br>• ไอเดีย: เปลี่ยนไฟ/ซีลประตู/ปรับผ้าม่าน'
-  }
-};
+  <script>
+    // ---------- Map ----------
+    const map = L.map('map').setView([13.736717, 100.523186], 13); // BKK
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+    // จุดตัวอย่าง
+    const pts = [
+      [13.7307,100.5402,'Condo A'], [13.7425,100.5167,'Condo B'], [13.7253,100.5101,'Condo C']
+    ];
+    pts.forEach(([lat,lng,label]) => L.marker([lat,lng]).addTo(map).bindPopup(label));
 
-/* ---------- แผนที่ ---------- */
-let map;
-document.addEventListener('DOMContentLoaded', () => {
-  map = L.map('map').setView([13.736, 100.523], 12); // ใจกลาง กทม.
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19, attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
-  L.marker([13.736,100.523]).addTo(map).bindPopup('กรุงเทพฯ').openPopup();
+    // ---------- Load JSON (มี cache-bust) ----------
+    async function loadLens(lens){
+      const v = 'v=' + Date.now();
+      const url = `${lens}.json?${v}`;
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) throw new Error('load json error');
+      return res.json();
+    }
 
-  // initial lens
-  applyLens(localStorage.getItem('pd_lens') || 'tenant');
-});
+    // ---------- Elements ----------
+    const lensBtns = {
+      tenant:   document.getElementById('lens-tenant'),
+      investor: document.getElementById('lens-investor'),
+      renovator:document.getElementById('lens-renovator')
+    };
+    const lensTag       = document.getElementById('lensTag');
+    const subtitle      = document.getElementById('subtitle');
+    const meterFill     = document.getElementById('meterFill');
+    const kpiLeftDesc   = document.getElementById('kpiLeftDesc');
+    const kpiRightTitle = document.getElementById('kpiRightTitle');
+    const kpiRightDesc  = document.getElementById('kpiRightDesc');
+    const detailsText   = document.getElementById('detailsText');
 
-/* ---------- สลับเลนส์ ---------- */
-const btns = {
-  tenant: document.getElementById('lens-tenant'),
-  investor: document.getElementById('lens-investor'),
-  renovator: document.getElementById('lens-renovator')
-};
-Object.entries(btns).forEach(([id,btn])=>{
-  btn.addEventListener('click', ()=> applyLens(id));
-});
+    // ---------- Apply lens ----------
+    async function applyLens(lens){
+      localStorage.setItem('pd_lens', lens);
+      Object.entries(lensBtns).forEach(([id,btn])=>{
+        btn.classList.toggle('active', id===lens);
+        btn.setAttribute('aria-selected', id===lens ? 'true' : 'false');
+      });
+      try{
+        const c = await loadLens(lens);
+        lensTag.textContent = c.tag || '';
+        subtitle.textContent = c.subtitle || '';
+        meterFill.style.width = Math.round((c.meter||0)*100) + '%';
+        kpiLeftDesc.textContent = c.kpiLeftDesc || '';
+        kpiRightTitle.textContent = c.kpiRightTitle || '';
+        kpiRightDesc.textContent = c.kpiRightDesc || '';
+        detailsText.innerHTML = c.detailsText || '';
+      }catch(e){ console.error(e); }
+    }
 
-const tag = document.getElementById('tag');
-const subtitle = document.getElementById('subtitle');
-const meter = document.getElementById('meter');
-const kpiLeft = document.getElementById('kpiLeft');
-const kpiRightTitle = document.getElementById('kpiRightTitle');
-const kpiRight = document.getElementById('kpiRight');
-const details = document.getElementById('details');
+    lensBtns.tenant  .addEventListener('click', ()=>applyLens('tenant'));
+    lensBtns.investor.addEventListener('click', ()=>applyLens('investor'));
+    lensBtns.renovator.addEventListener('click', ()=>applyLens('renovator'));
 
-function applyLens(lens){
-  localStorage.setItem('pd_lens', lens);
-  Object.entries(btns).forEach(([id,btn])=>{
-    btn.classList.toggle('active', id===lens);
-    btn.setAttribute('aria-selected', id===lens ? 'true':'false');
-  });
-  const c = DATA[lens];
-  tag.textContent = c.tag;
-  subtitle.textContent = c.subtitle;
-  meter.style.width = Math.round(c.meter*100)+'%';
-  kpiLeft.textContent = c.kpiLeft;
-  kpiRightTitle.textContent = c.kpiRightTitle;
-  kpiRight.textContent = c.kpiRight;
-  details.innerHTML = c.details;
+    // ---------- Quick menu ----------
+    const lensBar = document.querySelector('.lens-bar');
+    document.querySelector('[data-action="get-started"]')
+      ?.addEventListener('click', ()=> lensBar?.scrollIntoView({behavior:'smooth', block:'center'}));
 
-  // ตัวอย่าง: ขยับ marker เล็กน้อยตามเลนส์ (เพื่อเห็นแผนที่ตอบสนอง)
-  if(map){
-    const offsets = { tenant:[0,0], investor:[0.01,-0.005], renovator:[-0.01,0.005] };
-    const base = [13.736,100.523];
-    const d = offsets[lens];
-    const p = [base[0]+d[0], base[1]+d[1]];
-    map.panTo(p, {animate:true, duration:.5});
-  }
-}
-</script>
+    document.querySelector('[data-action="insights"]')
+      ?.addEventListener('click', ()=> alert('พื้นที่ “บทวิเคราะห์” (placeholder)\n— เดี๋ยวค่อยเชื่อมหน้า/คอนเทนต์จริง'));
+
+    document.querySelector('[data-action="legal"]')
+      ?.addEventListener('click', ()=> alert('พื้นที่ “ข้อกฎหมายที่ควรทราบ” (placeholder)'));
+
+    document.querySelector('[data-action="contact"]')
+      ?.addEventListener('click', ()=> window.open('mailto:hello@propdecoded.example','_blank'));
+
+    // ---------- Init ----------
+    applyLens(localStorage.getItem('pd_lens') || 'tenant');
+  </script>
 </body>
 </html>
+  
